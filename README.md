@@ -1,4 +1,4 @@
-Drug Safety Report API prototype
+reqressiongDrug Safety Report API prototype
 ===
 ---
 
@@ -129,6 +129,6 @@ Also monitoring for application needs to be designed and implemented. This could
 
 Fail-safe operations would be needed to designed, in-order to help provide application self-healing capabilities.
 
-Also better testing would be added, those that are needed to go to production: integration testing, system testing and provide reqressiong testing to keep application in working order for years to come.
+Also better testing would be added, those that are needed to go to production: integration testing, system testing and provide reqression testing to keep application in working order for years to come.
 
 Lastly Kubernetes could be tested and prototyped instead of Docker for better deployment strategy and management, not to mention capability to use other container technogies than Docker, as sometimes Docker has quite costly licenses and similar ones can be find Open Sourced.
