@@ -1,0 +1,73 @@
+@startuml DrugSafetyReport Deployment
+
+!theme cerulean
+skinparam backgroundColor white
+skinparam componentStyle uml2
+
+title Drug Safety Report - Docker Deployment Architecture
+
+node "Docker Host" {
+    node "Docker Container: drugsafetyreport-app" {
+        component "Spring Boot Application" {
+            [API Layer] as api
+            [Service Layer] as service
+            [Data Layer] as data
+            [Spring Actuator] as actuator
+        }
+        
+        database "H2 Database" {
+            [Data Files] as datafiles
+        }
+        
+        component "Configuration" {
+            [application.yml] as appconfig
+            [application-docker.yml] as dockerconfig
+        }
+    }
+
+    folder "Mounted Volumes" {
+        [/app/data] as persistentdata
+    }
+}
+
+cloud "External Systems" {
+    [Client Applications] as client
+}
+
+node "Development Environment" {
+    [Maven Build] as maven
+    [Source Code] as source
+}
+
+client --> api : HTTP/JSON
+(Port 8080)
+api --> service
+service --> data
+data --> datafiles
+datafiles --> persistentdata : Persistence
+actuator --> [Health Check] : Monitor
+
+note right of actuator
+  Health Check Endpoint:
+  /actuator/health
+  Interval: 30s
+end note
+
+note right of [Docker Container: drugsafetyreport-app]
+  Container Configuration:
+  - Non-root user: spring
+  - JVM Memory: 512MB max
+  - Exposed port: 8080
+  - Health check enabled
+end note
+
+note right of persistentdata
+  Volume Mapping:
+  ./data:/app/data
+  For H2 database persistence
+end note
+
+[Maven Build] --> [Docker Container: drugsafetyreport-app] : builds
+[Source Code] --> [Maven Build] : compiles
+
+@enduml

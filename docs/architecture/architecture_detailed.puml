@@ -1,0 +1,86 @@
+@startuml DrugSafetyReport Architecture
+
+!theme cerulean
+skinparam componentStyle uml2
+skinparam packageStyle rectangle
+skinparam backgroundColor white
+skinparam ArrowColor #0B6FA4
+
+title DrugSafetyReport System Architecture
+
+package "API Layer" #E8F2FF {
+    [DrugSafetyReportController] as controller
+    note right of controller
+        Endpoints:
+        - GET /reports
+        - GET /reports/{id}
+        - POST /reports
+    end note
+    
+    [OpenAPI/Swagger UI] as swagger
+}
+
+package "Service Layer" #F0FFF0 {
+    [DrugSafetyReportService] as service
+    note right of service
+        - Business Logic
+        - Transaction Management
+        - Status Handling
+    end note
+    
+    [Validation Service] as validation
+}
+
+package "Data Layer" #FFF5EE {
+    [DrugSafetyReportRepository] as repository
+    database "H2 Database" as db {
+        [DrugSafetyReport Table] as table
+        note right of table
+            Columns:
+            - id (PK)
+            - reporterName
+            - productName
+            - descriptionOfIssue
+            - timestamp
+            - status
+        end note
+    }
+}
+
+package "Error Handling" #FFE4E1 {
+    [DrugSafetyReportNotFoundException] as notfound
+    [ErrorResponse] as error
+    [ExceptionAdvice] as advice
+    note right of advice
+        - 404 Not Found
+        - 400 Bad Request
+        - JSON Error Responses
+    end note
+}
+
+package "Domain Model" #E6E6FA {
+    [DrugSafetyReport] as model
+    [DrugSafetyReportStatus] as status
+    note right of status
+        Enum Values:
+        - NEW
+        - IN_REVIEW
+        - CLOSED
+    end note
+}
+
+actor "Client" as client
+
+client --> controller : HTTP Requests
+controller --> swagger : Documents API
+controller --> service : Delegates Operations
+service --> validation : Validates Data
+service --> repository : CRUD Operations
+repository --> db : Persists Data
+controller ..> notfound : Throws Exception
+notfound --> advice : Handles Exception
+advice --> error : Creates Response
+model --> status : Uses
+service --> model : Manages
+
+@enduml

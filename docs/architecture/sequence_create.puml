@@ -1,0 +1,52 @@
+@startuml DrugSafetyReport Sequence
+
+!theme cerulean
+skinparam backgroundColor white
+skinparam SequenceMessageAlign center
+
+title Drug Safety Report - Create Report Sequence
+
+actor Client
+participant "DrugSafetyReportController" as controller
+participant "DrugSafetyReportService" as service
+participant "Validation" as validation
+participant "DrugSafetyReportRepository" as repo
+database "H2 Database" as db
+
+Client -> controller : POST /reports
+(JSON payload)
+activate controller
+
+controller -> validation : Validate request
+activate validation
+validation --> controller : Validation result
+deactivate validation
+
+alt Valid Request
+    controller -> service : Create report
+    activate service
+    
+    service -> repo : save(report)
+    activate repo
+    
+    repo -> db : INSERT query
+    activate db
+    db --> repo : Return generated ID
+    deactivate db
+    
+    repo --> service : Return saved entity
+    deactivate repo
+    
+    service --> controller : Return created report
+    deactivate service
+    
+    controller --> Client : 201 Created
+(JSON response)
+else Invalid Request
+    controller --> Client : 400 Bad Request
+(Error details)
+end
+
+deactivate controller
+
+@enduml

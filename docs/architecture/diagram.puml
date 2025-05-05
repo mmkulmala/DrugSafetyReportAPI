@@ -1,0 +1,63 @@
+@startuml DrugSafetyReport
+
+title DrugSafetyReport System Architecture
+
+actor "Client" as client
+
+package "API Layer" {
+    [DrugSafetyReportController] as controller
+}
+
+package "Service Layer" {
+    [DrugSafetyReportService] as service
+}
+
+package "Data Layer" {
+    [DrugSafetyReportRepository] as repository
+    database "H2 Database" as db
+}
+
+package "Support" {
+    [OpenAPI/Swagger] as swagger
+    [Spring Actuator] as actuator
+    [Error Handler] as error
+}
+
+cloud "Docker Container" {
+    note bottom: Running as non-root user
+    note bottom: Memory: 512MB
+    note bottom: Port: 8080
+}
+
+folder "Volume" as volume {
+    note bottom: ./data:/app/data
+}
+
+client -> controller: HTTP/JSON
+controller -> service
+service -> repository
+repository -> db
+db ..> volume: persists
+swagger ..> controller: documents
+actuator ..> db: monitors
+controller ..> error: handles exceptions
+
+note right of controller
+  REST Endpoints:
+  GET /reports
+  GET /reports/{id}
+  POST /reports
+end note
+
+note right of service
+  Business Logic
+  Validation
+  Status Management
+end note
+
+note right of db
+  Persistent Storage
+  File-based H2
+end note
+
+@enduml

@@ -1,0 +1,6 @@
+name: "Drug Safety Report"
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
