@@ -5,7 +5,7 @@ reqressiongDrug Safety Report API prototype
 Architectural overview
 ===
 ---
-In this section will go through Drug Safety Report API in detail. First by showing the architectural image and then go through the architectural parts and decisions.
+In this section we will go through Drug Safety Report API in detail. First by showing the architectural image and then go through the architectural parts and decisions.
 
 ![Drug Safety Report architecture](./docs/architecture/architecture.png)
 
