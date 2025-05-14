@@ -1,4 +1,4 @@
-reqressiongDrug Safety Report API prototype
+Drug Safety Report API prototype
 ===
 ---
 
